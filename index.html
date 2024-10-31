@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Leafy Greens Lot History</title>
+</head>
+<body>
+  <h1>Leafy Greens Lot History</h1>
+  <div id="history">Loading...</div>
+
+  <script>
+    // Extract lot code from the URL (e.g., example.com?lotCode=123)
+    const urlParams = new URLSearchParams(window.location.search);
+    const lotCode = urlParams.get('lotCode');
+    console.log("Lot Code from URL:", lotCode);  // Log the extracted lot code
+
+    // Fetch data
+    fetch(`https://script.google.com/macros/s/AKfycbwDh5Ls7mysKKhPXxL2qQLuPmaSeyLmx8gn7tu9i9HD5EUZ6JroEwm76vV-YlY4Jzg_gw/exec?lotCode=${lotCode}`)
+      .then(response => {
+        console.log("Response received:", response);
+        return response.json();
+      })
+      .then(data => {
+        console.log("Data received:", data);  // Log the data received
+        const historyDiv = document.getElementById('history');
+        
+        if (data.length) {
+          historyDiv.innerHTML = `<h2>History for Lot Code: ${lotCode}</h2>`;
+          
+          data.forEach(item => {
+            let tableHTML = "<table border='1' style='border-collapse: collapse; width: 50%;'><tbody>";
+            
+            Object.keys(item).forEach(key => {
+              tableHTML += `<tr>
+                              <td style='padding: 8px; font-weight: bold;'>${key}</td>
+                              <td style='padding: 8px;'>${item[key]}</td>
+                            </tr>`;
+            });
+            
+            tableHTML += "</tbody></table>";
+            historyDiv.innerHTML += tableHTML;
+          });
+          
+        } else {
+          historyDiv.innerHTML = "<p>No data found for this lot code.</p>";
+        }
+      })
+      .catch(error => {
+        document.getElementById('history').innerHTML = "<p>Error loading data.</p>";
+        console.error("Error fetching data:", error);
+      });
+  </script>
+</body>
+</html>
